@@ -2,8 +2,8 @@ const $ = require('jquery');
 
 const BASE_URL = 'https://pixabay.com/api?key=7449813-3f6b2a4c78c08db391996117d';
 
-const fetchByTerm = (searchTerm, callback) => {
-  $.get(BASE_URL + '&q=' + searchTerm, callback);
+const fetchByTerm = (searchTerm) => {
+  return $.get(`${BASE_URL}&q=${encodeURI(searchTerm)}`);
 };
 
 const impureDOM = (() => {
@@ -33,7 +33,7 @@ const impureDOM = (() => {
 $('#submit').on('click', () => {
   const { searchTerm, likes, minHeight, minWidth } = impureDOM.read();
 
-  fetchByTerm(window.encodeURI(searchTerm), (response) => {
+  fetchByTerm(searchTerm).then((response) => {
     $('#results').empty();
     console.log('response', response);
 
