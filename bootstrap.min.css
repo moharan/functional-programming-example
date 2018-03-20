@@ -1,0 +1,44 @@
+body {
+  font-size: 16px;
+}
+
+.results {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.tip {
+  padding: 1em;
+  font-size: 2em;
+}
+
+.card {}
+
+.card__body {
+  background: black;
+  color: white;
+  padding: 1em;
+}
+
+.card__title,
+.card__likes,
+.card__width,
+.card__height {
+  margin: 0;
+}
+
+.card__title::before {
+  content: 'Tags: '
+}
+
+.card__likes::before {
+  content: 'Likes: '
+}
+
+.card__width::before {
+  content: 'Width: '
+}
+
+.card__height::before {
+  content: 'Height: '
+}

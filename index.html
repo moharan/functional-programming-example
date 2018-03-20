@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>My functional example</title>
+    <link rel="stylesheet" href="bootstrap.min.css">
+    <script defer src="main.dist.js"></script>
+  </head>
+  <body>
+    <h1>Image finder</h1>
+    <section>
+      <input id="searchTerm" value="" type="search" placeholder="search for pictures" />
+      <label for="numberOfLikes">Likes</label>
+      <input id="numberOfLikes" type="number" min="0" max="10000" placeholder="likes" value="1" data-min-likes="1" />
+      <label for="width">Width</label>
+      <input id="width" type="number" min="10" max="5000" placeholder="width" value="10" data-min-width="10" />
+      <label for="height">Height</label>
+      <input id="height" type="number" min="10" max="5000" placeholder="height" value="10" data-min-height="10" />
+      <button id="submit" class="btn btn-primary">search</button>
+    </section>
+    <section id="tip" class="tip"></section>
+    <section id="results" class="results"></section>
+  </body>
+</html>
