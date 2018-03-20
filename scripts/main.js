@@ -6,16 +6,32 @@ const fetchByTerm = (searchTerm, callback) => {
   $.get(BASE_URL + '&q=' + searchTerm, callback);
 };
 
-$('#submit').on('click', () => {
+const impureDOM = (() => {
   const $searchTerm = $('#searchTerm');
   const $numberOfLikes = $('#numberOfLikes');
   const $width = $('#width');
   const $height = $('#height');
 
-  const searchTerm = $searchTerm.val();
-  const likes = parseInt($numberOfLikes.val(), 10);
-  const minWidth = parseInt($width.val(), 10);
-  const minHeight = parseInt($height.val(), 10);
+  return {
+    read: () => {
+      const searchTerm = $searchTerm.val();
+      const likes = parseInt($numberOfLikes.val(), 10);
+      const minWidth = parseInt($width.val(), 10);
+      const minHeight = parseInt($height.val(), 10);
+
+      return { searchTerm, likes, minWidth, minHeight };
+    },
+    reset: () => {
+      $searchTerm.val('');
+      $numberOfLikes.val($numberOfLikes.data('minLikes'));
+      $width.val($width.data('minWidth'));
+      $height.val($height.data('minHeight'));
+    }
+  };
+})();
+
+$('#submit').on('click', () => {
+  const { searchTerm, likes, minHeight, minWidth } = impureDOM.read();
 
   fetchByTerm(window.encodeURI(searchTerm), (response) => {
     $('#results').empty();
@@ -47,9 +63,6 @@ $('#submit').on('click', () => {
       }
     }
 
-    $searchTerm.val('');
-    $numberOfLikes.val($numberOfLikes.data('minLikes'));
-    $width.val($width.data('minWidth'));
-    $height.val($height.data('minHeight'));
+    impureDOM.reset();
   });
 });
