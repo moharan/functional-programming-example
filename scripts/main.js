@@ -12,6 +12,8 @@ const filter = fn => xs => xs.filter(fn);
 // third functional utility, it creates another function to map
 // with a transform function the current list to something else
 const map = fn => xs => xs.map(fn);
+// fourth functional utility, it executes the fn function for every element on the list
+const forEach = fn => xs => xs.forEach(fn);
 
 const fetchByTerm = (searchTerm) => {
   return $.get(`${BASE_URL}&q=${encodeURI(searchTerm)}`);
@@ -71,31 +73,27 @@ $('#submit').on('click', () => {
   const { searchTerm, likes, minHeight, minWidth } = impureDOM.read();
 
   fetchByTerm(searchTerm)
-  .then(prop('hits'))
-  .then(filter(hit => hit.likes >= likes))
-  .then(filter(hit => hit.webformatHeight >= minHeight))
-  .then(filter(hit => hit.webformatWidth >= minWidth))
-  .then(hits => {
-    impureResults.resetResults(impureDOM.read());
-    return hits;
-  })
-  .then(map(hit => ({
-    image: hit.webformatURL,
-    tag: hit.tags,
-    likes: hit.likes,
-    height: hit.webformatHeight,
-    width: hit.webformatWidth
-  })))
-  .then((hits) => {
-    console.log('response', hits);
-
-    for(let i = 0; i < hits.length; i++) {
-      const hit = hits[i];
-      const { image, tag, likes, height, width } = hit;
-      appendResult({ image, tag, likes, height, width });
-    }
-  })
-  .then(() => {
-    impureDOM.reset();
-  });
+    .then(prop('hits'))
+    .then(filter(hit => hit.likes >= likes))
+    .then(filter(hit => hit.webformatHeight >= minHeight))
+    .then(filter(hit => hit.webformatWidth >= minWidth))
+    .then(hits => {
+      impureResults.resetResults(impureDOM.read());
+      return hits;
+    })
+    .then(map(hit => ({
+      image: hit.webformatURL,
+      tag: hit.tags,
+      likes: hit.likes,
+      height: hit.webformatHeight,
+      width: hit.webformatWidth
+    })))
+    .then((hits) => {
+      console.log('response', hits);
+      return hits;
+    })
+    .then(forEach(appendResult))
+    .then(() => {
+      impureDOM.reset();
+    });
 });
