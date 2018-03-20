@@ -1,5 +1,5 @@
 const $ = require('jquery');
-const { prop, filter, map, forEach, compose } = require('./function-utils');
+const { prop, filter, map, forEach, compose, log } = require('./function-utils');
 
 const BASE_URL = 'https://pixabay.com/api?key=7449813-3f6b2a4c78c08db391996117d';
 
@@ -71,12 +71,7 @@ $('#submit').on('click', () => {
       return hits;
     })
     .then(map(transformHit))
-    .then((hits) => {
-      console.log('response', hits);
-      return hits;
-    })
+    .then(log('response'))
     .then(forEach(impureDOM.appendResult))
-    .then(() => {
-      impureDOM.reset();
-    });
+    .then(impureDOM.reset);
 });

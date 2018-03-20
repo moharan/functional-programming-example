@@ -12,5 +12,7 @@ const map = fn => xs => xs.map(fn);
 const forEach = fn => xs => xs.forEach(fn);
 // compose fancyness
 const compose = (...fns) => x => fns.reduceRight((acc, nextFn) => nextFn(acc), x);
+// isolate the message stuff
+const log = message => x => (console.log(message, x), x);
 
-module.exports = { prop, filter, map, forEach, compose };
+module.exports = { prop, filter, map, forEach, compose, log };
