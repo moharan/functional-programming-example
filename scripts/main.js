@@ -48,7 +48,7 @@ $('#submit').on('click', () => {
     }
 
     $searchTerm.val('');
-    $numberOfLikes.val($numberOfLikes.data('minlike'));
+    $numberOfLikes.val($numberOfLikes.data('minLikes'));
     $width.val($width.data('minWidth'));
     $height.val($height.data('minHeight'));
   });
