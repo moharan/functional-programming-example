@@ -10,5 +10,7 @@ const filter = fn => xs => xs.filter(fn);
 const map = fn => xs => xs.map(fn);
 // fourth functional utility, it executes the fn function for every element on the list
 const forEach = fn => xs => xs.forEach(fn);
+// compose fancyness
+const compose = (...fns) => x => fns.reduceRight((acc, nextFn) => nextFn(acc), x);
 
-module.exports = { prop, filter, map, forEach };
+module.exports = { prop, filter, map, forEach, compose };
