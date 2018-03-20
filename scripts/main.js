@@ -2,6 +2,10 @@ const $ = require('jquery');
 
 const BASE_URL = 'https://pixabay.com/api?key=7449813-3f6b2a4c78c08db391996117d';
 
+// first functional utility, it creates another function
+// which will take the property from the object and return it
+const prop = property => x => x[property];
+
 const fetchByTerm = (searchTerm) => {
   return $.get(`${BASE_URL}&q=${encodeURI(searchTerm)}`);
 };
@@ -33,14 +37,16 @@ const impureDOM = (() => {
 $('#submit').on('click', () => {
   const { searchTerm, likes, minHeight, minWidth } = impureDOM.read();
 
-  fetchByTerm(searchTerm).then((response) => {
+  fetchByTerm(searchTerm)
+  .then(prop('hits'))
+  .then((hits) => {
     $('#results').empty();
-    console.log('response', response);
+    console.log('response', hits);
 
     $('#tip').html(`Your results for <strong>${searchTerm}</strong> -> width: ${minWidth}px, height: ${minHeight}px, likes: ${likes} `);
 
-    for(let i = 0; i < response.hits.length; i++) {
-      const hit = response.hits[i];
+    for(let i = 0; i < hits.length; i++) {
+      const hit = hits[i];
 
       if (hit.likes >= likes && hit.webformatHeight >= minHeight && hit.webformatWidth >= minWidth) {
         const image = hit.webformatURL;
