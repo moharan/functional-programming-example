@@ -1,29 +1,17 @@
 const $ = require('jquery');
+const { prop, filter, map, forEach } = require('./function-utils');
 
 const BASE_URL = 'https://pixabay.com/api?key=7449813-3f6b2a4c78c08db391996117d';
 
-// first functional utility, it creates another function
-// which will take the property from the object and return it
-const prop = property => x => x[property];
-// second functional utility, it creates another function
-// which takes a predicate function to remove every element which does not
-// match the current condition
-const filter = fn => xs => xs.filter(fn);
-// third functional utility, it creates another function to map
-// with a transform function the current list to something else
-const map = fn => xs => xs.map(fn);
-// fourth functional utility, it executes the fn function for every element on the list
-const forEach = fn => xs => xs.forEach(fn);
-
-const fetchByTerm = (searchTerm) => {
-  return $.get(`${BASE_URL}&q=${encodeURI(searchTerm)}`);
-};
+const fetchByTerm = searchTerm => $.get(`${BASE_URL}&q=${encodeURI(searchTerm)}`);
 
 const impureDOM = (() => {
   const $searchTerm = $('#searchTerm');
   const $numberOfLikes = $('#numberOfLikes');
   const $width = $('#width');
   const $height = $('#height');
+  const $results = $('#results');
+  const $tip = $('#tip');
 
   return {
     read: () => {
@@ -39,35 +27,34 @@ const impureDOM = (() => {
       $numberOfLikes.val($numberOfLikes.data('minLikes'));
       $width.val($width.data('minWidth'));
       $height.val($height.data('minHeight'));
-    }
-  };
-})();
-
-const impureResults = (() => {
-  const $results = $('#results');
-  const $tip = $('#tip');
-
-  return {
-    resetResults: ({ searchTerm, likes, minHeight, minWidth }) => {
+    },
+    renderResults: ({ searchTerm, likes, minHeight, minWidth }) => {
       $results.empty();
       $tip.html(`Your results for <strong>${searchTerm}</strong> -> width: ${minWidth}px, height: ${minHeight}px, likes: ${likes} `);
+    },
+    appendResult: ({ image, tag, likes, width, height }) => {
+      $results.append(`
+        <div class="card">
+          <img class="card__image" src="${image}" alt="Card image cap">
+          <div class="card__body">
+            <p class="card__title">${tag}</p>
+            <p class="card__likes">${likes}</p>
+            <p class="card__width">${width}</p>
+            <p class="card__height">${height}</p>
+          </div>
+        </div>
+      `);
     }
   };
 })();
 
-const appendResult = ({ image, tag, likes, width, height }) => {
-  $('#results').append(`
-    <div class="card">
-      <img class="card__image" src="${image}" alt="Card image cap">
-      <div class="card__body">
-        <p class="card__title">${tag}</p>
-        <p class="card__likes">${likes}</p>
-        <p class="card__width">${width}</p>
-        <p class="card__height">${height}</p>
-      </div>
-    </div>
-  `);
-};
+const transformHit = hit => ({
+  image: hit.webformatURL,
+  tag: hit.tags,
+  likes: hit.likes,
+  height: hit.webformatHeight,
+  width: hit.webformatWidth
+});
 
 $('#submit').on('click', () => {
   const { searchTerm, likes, minHeight, minWidth } = impureDOM.read();
@@ -78,21 +65,15 @@ $('#submit').on('click', () => {
     .then(filter(hit => hit.webformatHeight >= minHeight))
     .then(filter(hit => hit.webformatWidth >= minWidth))
     .then(hits => {
-      impureResults.resetResults(impureDOM.read());
+      impureDOM.renderResults(impureDOM.read());
       return hits;
     })
-    .then(map(hit => ({
-      image: hit.webformatURL,
-      tag: hit.tags,
-      likes: hit.likes,
-      height: hit.webformatHeight,
-      width: hit.webformatWidth
-    })))
+    .then(map(transformHit))
     .then((hits) => {
       console.log('response', hits);
       return hits;
     })
-    .then(forEach(appendResult))
+    .then(forEach(impureDOM.appendResult))
     .then(() => {
       impureDOM.reset();
     });
