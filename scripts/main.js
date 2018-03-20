@@ -26,7 +26,7 @@ $('#submit').on('click', () => {
     for(let i = 0; i < response.hits.length; i++) {
       const hit = response.hits[i];
 
-      if (hit.likes >= likes && hit.webformatHeight >= minHeight) {
+      if (hit.likes >= likes && hit.webformatHeight >= minHeight && hit.webformatWidth >= minWidth) {
         const image = hit.webformatURL;
         const tag = hit.tags;
         const likes = hit.likes;
