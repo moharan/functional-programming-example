@@ -1,5 +1,5 @@
 const $ = require('jquery');
-const { prop, filter, map, forEach, compose, log } = require('./function-utils');
+const { prop, filter, map, forEach, compose, log, executeImpure } = require('./function-utils');
 
 const BASE_URL = 'https://pixabay.com/api?key=7449813-3f6b2a4c78c08db391996117d';
 
@@ -28,7 +28,8 @@ const impureDOM = (() => {
       $width.val($width.data('minWidth'));
       $height.val($height.data('minHeight'));
     },
-    renderResults: ({ searchTerm, likes, minHeight, minWidth }) => {
+    renderResults: () => {
+      const { searchTerm, likes, minHeight, minWidth } = impureDOM.read();
       $results.empty();
       $tip.html(`Your results for <strong>${searchTerm}</strong> -> width: ${minWidth}px, height: ${minHeight}px, likes: ${likes} `);
     },
@@ -56,20 +57,19 @@ const transformHit = hit => ({
   width: hit.webformatWidth
 });
 
+const propIsGreater = propName => expected => obj => prop(propName)(obj) >= expected;
+
 $('#submit').on('click', () => {
   const { searchTerm, likes, minHeight, minWidth } = impureDOM.read();
 
   fetchByTerm(searchTerm)
     .then(prop('hits'))
     .then(compose(
-      filter(hit => hit.likes >= likes),
-      filter(hit => hit.webformatHeight >= minHeight),
-      filter(hit => hit.webformatWidth >= minWidth)
+      filter(propIsGreater('likes')(likes)),
+      filter(propIsGreater('webformatHeight')(minHeight)),
+      filter(propIsGreater('webformatWidth')(minWidth))
     ))
-    .then(hits => {
-      impureDOM.renderResults(impureDOM.read());
-      return hits;
-    })
+    .then(executeImpure(impureDOM.renderResults))
     .then(map(transformHit))
     .then(log('response'))
     .then(forEach(impureDOM.appendResult))
