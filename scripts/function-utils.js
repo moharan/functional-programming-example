@@ -14,5 +14,7 @@ const forEach = fn => xs => xs.forEach(fn);
 const compose = (...fns) => x => fns.reduceRight((acc, nextFn) => nextFn(acc), x);
 // isolate the message stuff
 const log = message => x => (console.log(message, x), x);
+// to execute something impure in middle of a mapping
+const executeImpure = fn => x => (fn(), x);
 
-module.exports = { prop, filter, map, forEach, compose, log };
+module.exports = { prop, filter, map, forEach, compose, log, executeImpure };
